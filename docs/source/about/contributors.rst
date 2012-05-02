@@ -7,6 +7,7 @@ Contributors
 Many, many thanks to:
 
 * `Alex Lambert <https://github.com/bifflabs>`_
+* `Basil James Whitehouse III <https://github.com/basil3whitehouse>`_
 * `Brian Roberts <https://github.com/flicken>`_
 * `Bruce Mitchener <https://github.com/waywardmonkeys>`_
 * `C. Scott Andreas <https://github.com/cscotta>`_
@@ -37,6 +38,7 @@ Many, many thanks to:
 * `Mårten Gustafson <https://github.com/chids>`_
 * `Michał Minicki <https://github.com/martel>`_
 * `Neil Prosser <https://github.com/neilprosser>`_
+* `Nick Telford <https://github.com/nicktelford>`_
 * `Paul Bloch <https://github.com/pbloch>`_
 * `Paul Brown <https://github.com/prb>`_
 * `Robby Walker <https://github.com/robbywalker>`_
@@ -44,5 +46,6 @@ Many, many thanks to:
 * `Ryan W Tenney <https://github.com/ryantenney>`_
 * `Sam Perman <https://github.com/samperman>`_
 * `Shaneal Manek <https://github.com/smanek>`_
+* `Steven Schlansker <https://github.com/stevenschlansker>`_
 * `Thomas Dudziak <https://github.com/tomdz>`_
 * `Tobias Lidskog <https://github.com/tobli>`_

@@ -4,10 +4,24 @@
 Release Notes
 #############
 
+.. _rel-2.1.2:
+
+v2.1.2: Apr 11 2012
+===================
+
+* Fixed double-registration in ``metrics-guice``.
+
+.. _rel-2.1.1:
+
+v2.1.1: Mar 13 2012
+===================
+
+* Fixed instrumentation of all usages of ``InstrumentedHttpClient``.
+
 .. _rel-2.1.0:
 
-v2.1.0-SNAPSHOT
-===============
+v2.1.0: Mar 12 2012
+===================
 
 * Added support for Java 7's direct and mapped buffer pool stats in ``VirtualMachineMetrics`` and
   ``metrics-servlet``.
@@ -17,6 +31,8 @@ v2.1.0-SNAPSHOT
 * Added ``group`` and ``type`` to ``metrics-annotations``, ``metrics-guice``, ``metrics-jersey``,
   and ``metrics-spring``.
 * Fixed handling of non-int gauges in ``GangliaReporter``.
+* Fixed ``NullPointerException`` errors in ``metrics-spring``.
+* General improvements to ``metrics-spring``, including allowing custom ``Clock`` instances.
 
 .. _rel-2.0.3:
 
