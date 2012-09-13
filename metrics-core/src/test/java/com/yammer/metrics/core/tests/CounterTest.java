@@ -1,32 +1,15 @@
 package com.yammer.metrics.core.tests;
 
 import com.yammer.metrics.core.Counter;
-import com.yammer.metrics.core.MetricName;
-import com.yammer.metrics.core.MetricProcessor;
 import com.yammer.metrics.core.MetricsRegistry;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 public class CounterTest {
-    private MetricsRegistry registry;
-    private Counter counter;
-
-    @Before
-    public void setUp() throws Exception {
-        this.registry = new MetricsRegistry();
-        this.counter = registry.newCounter(CounterTest.class, "counter");
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        registry.shutdown();
-    }
+    private final MetricsRegistry registry = new MetricsRegistry();
+    private final Counter counter = registry.newCounter(CounterTest.class, "counter");
 
     @Test
     public void startsAtZero() throws Exception {
@@ -79,17 +62,5 @@ public class CounterTest {
         assertThat("the counter's value after being cleared is zero",
                    counter.getCount(),
                    is(0L));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void isProcessedAsACounter() throws Exception {
-        final MetricName name = new MetricName(CounterTest.class, "counter");
-        final Object context = new Object();
-        final MetricProcessor<Object> processor = mock(MetricProcessor.class);
-
-        counter.processWith(processor, name, context);
-
-        verify(processor).processCounter(name, counter, context);
     }
 }

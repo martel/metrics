@@ -1,34 +1,17 @@
 package com.yammer.metrics.core.tests;
 
 import com.yammer.metrics.core.Histogram;
-import com.yammer.metrics.core.MetricName;
-import com.yammer.metrics.core.MetricProcessor;
 import com.yammer.metrics.core.MetricsRegistry;
 import com.yammer.metrics.stats.Snapshot;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 public class HistogramTest {
-    private MetricsRegistry registry;
-    private Histogram histogram;
-
-    @Before
-    public void setUp() throws Exception {
-        this.registry = new MetricsRegistry();
-        this.histogram = registry.newHistogram(HistogramTest.class, "histogram", false);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        registry.shutdown();
-    }
+    private final MetricsRegistry registry = new MetricsRegistry();
+    private final Histogram histogram = registry.newHistogram(HistogramTest.class, "histogram", false);
 
     @Test
     public void anEmptyHistogram() throws Exception {
@@ -122,17 +105,5 @@ public class HistogramTest {
         assertThat("the histogram has 1000 values",
                    snapshot.size(),
                    is(1000));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void isProcessedAsAHistogram() throws Exception {
-        final MetricName name = new MetricName(HistogramTest.class, "histogram");
-        final Object context = new Object();
-        final MetricProcessor<Object> processor = mock(MetricProcessor.class);
-
-        histogram.processWith(processor, name, context);
-
-        verify(processor).processHistogram(name, histogram, context);
     }
 }

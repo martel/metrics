@@ -20,6 +20,7 @@ public class JmxReporter extends AbstractReporter implements MetricsRegistryList
 
     private final Map<MetricName, ObjectName> registeredBeans;
     private final MBeanServer server;
+    private final MetricDispatcher dispatcher;
 
     // CHECKSTYLE:OFF
     @SuppressWarnings("UnusedDeclaration")
@@ -386,17 +387,34 @@ public class JmxReporter extends AbstractReporter implements MetricsRegistryList
         super(registry);
         this.registeredBeans = new ConcurrentHashMap<MetricName, ObjectName>(100);
         this.server = ManagementFactory.getPlatformMBeanServer();
+        this.dispatcher = new MetricDispatcher();
     }
 
     @Override
     public void onMetricAdded(MetricName name, Metric metric) {
         if (metric != null) {
             try {
-                metric.processWith(this, name, new Context(name, new ObjectName(name.getMBeanName())));
+                dispatcher.dispatch(metric, name, this, new Context(name, createObjectName(name)));
             } catch (Exception e) {
-                LOGGER.warn("Error processing {}", name, e);
+                LOGGER.warn("Error processing " + name, e);
             }
         }
+    }
+
+    private ObjectName createObjectName(MetricName name) throws MalformedObjectNameException {
+        final StringBuilder nameBuilder = new StringBuilder();
+        nameBuilder.append(name.getDomain());
+        nameBuilder.append(":type=");
+        nameBuilder.append(name.getType());
+        if (name.hasScope()) {
+            nameBuilder.append(",scope=");
+            nameBuilder.append(name.getScope());
+        }
+        if (!name.getName().isEmpty()) {
+            nameBuilder.append(",name=");
+            nameBuilder.append(name.getName());
+        }
+        return new ObjectName(nameBuilder.toString());
     }
 
     @Override
@@ -457,6 +475,10 @@ public class JmxReporter extends AbstractReporter implements MetricsRegistryList
 
     private void registerBean(MetricName name, MetricMBean bean, ObjectName objectName)
             throws MBeanRegistrationException, OperationsException {
+
+        if ( server.isRegistered(objectName) ){
+            server.unregisterMBean(objectName);
+        }
         server.registerMBean(bean, objectName);
         registeredBeans.put(name, objectName);
     }
@@ -468,9 +490,9 @@ public class JmxReporter extends AbstractReporter implements MetricsRegistryList
             // This is often thrown when the process is shutting down. An application with lots of
             // metrics will often begin unregistering metrics *after* JMX itself has cleared,
             // resulting in a huge dump of exceptions as the process is exiting.
-            LOGGER.trace("Error unregistering {}", name, e);
+            LOGGER.trace("Error unregistering " + name, e);
         } catch (MBeanRegistrationException e) {
-            LOGGER.debug("Error unregistering {}", name, e);
+            LOGGER.debug("Error unregistering " + name, e);
         }
     }
 }

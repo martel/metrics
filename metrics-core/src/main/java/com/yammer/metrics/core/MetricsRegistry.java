@@ -12,7 +12,6 @@ public class MetricsRegistry {
     private static final int EXPECTED_METRIC_COUNT = 1024;
     private final Clock clock;
     private final ConcurrentMap<MetricName, Metric> metrics;
-    private final ThreadPools threadPools;
     private final List<MetricsRegistryListener> listeners;
 
     /**
@@ -30,7 +29,6 @@ public class MetricsRegistry {
     public MetricsRegistry(Clock clock) {
         this.clock = clock;
         this.metrics = newMetricsMap();
-        this.threadPools = new ThreadPools();
         this.listeners = new CopyOnWriteArrayList<MetricsRegistryListener>();
     }
 
@@ -237,7 +235,7 @@ public class MetricsRegistry {
         if (existingMetric != null) {
             return (Meter) existingMetric;
         }
-        return getOrAdd(metricName, new Meter(newMeterTickThreadPool(), eventType, unit, clock));
+        return getOrAdd(metricName, new Meter(eventType, unit, clock));
     }
 
     /**
@@ -318,7 +316,7 @@ public class MetricsRegistry {
             return (Timer) existingMetric;
         }
         return getOrAdd(metricName,
-                        new Timer(newMeterTickThreadPool(), durationUnit, rateUnit, clock));
+                        new Timer(durationUnit, rateUnit, clock));
     }
 
     /**
@@ -350,7 +348,7 @@ public class MetricsRegistry {
         final SortedMap<String, SortedMap<MetricName, Metric>> groups =
                 new TreeMap<String, SortedMap<MetricName, Metric>>();
         for (Map.Entry<MetricName, Metric> entry : metrics.entrySet()) {
-            final String qualifiedTypeName = entry.getKey().getGroup() + "." + entry.getKey()
+            final String qualifiedTypeName = entry.getKey().getDomain() + "." + entry.getKey()
                                                                                     .getType();
             if (predicate.matches(entry.getKey(), entry.getValue())) {
                 final String scopedName;
@@ -368,25 +366,6 @@ public class MetricsRegistry {
             }
         }
         return Collections.unmodifiableSortedMap(groups);
-    }
-
-    /**
-     * Shut down this registry's thread pools.
-     */
-    public void shutdown() {
-        threadPools.shutdown();
-    }
-
-    /**
-     * Creates a new scheduled thread pool of a given size with the given name, or returns an
-     * existing thread pool if one was already created with the same name.
-     *
-     * @param poolSize the number of threads to create
-     * @param name     the name of the pool
-     * @return a new {@link ScheduledExecutorService}
-     */
-    public ScheduledExecutorService newScheduledThreadPool(int poolSize, String name) {
-        return threadPools.newScheduledThreadPool(poolSize, name);
     }
 
     /**
@@ -421,9 +400,6 @@ public class MetricsRegistry {
     public void removeMetric(MetricName name) {
         final Metric metric = metrics.remove(name);
         if (metric != null) {
-            if (metric instanceof Stoppable) {
-                ((Stoppable) metric).stop();
-            }
             notifyMetricRemoved(name);
         }
     }
@@ -513,18 +489,9 @@ public class MetricsRegistry {
                 notifyMetricAdded(name, metric);
                 return metric;
             }
-
-            if (metric instanceof Stoppable) {
-                ((Stoppable) metric).stop();
-            }
-
             return (T) justAddedMetric;
         }
         return (T) existingMetric;
-    }
-
-    private ScheduledExecutorService newMeterTickThreadPool() {
-        return threadPools.newScheduledThreadPool(2, "meter-tick");
     }
 
     private void notifyMetricRemoved(MetricName name) {

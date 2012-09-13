@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <prerequisites>
+        <maven>3.0.0</maven>
+    </prerequisites>
 
     <groupId>com.yammer.metrics</groupId>
     <artifactId>metrics-parent</artifactId>
@@ -13,10 +16,11 @@
     <url>http://metrics.codahale.com/</url>
 
     <modules>
-        <module>contribs</module>
         <module>metrics-annotation</module>
         <module>metrics-core</module>
         <module>metrics-ehcache</module>
+        <module>metrics-ganglia</module>
+        <module>metrics-graphite</module>
         <module>metrics-httpclient</module>
         <module>metrics-jdbi</module>
         <module>metrics-jersey</module>
@@ -25,16 +29,15 @@
         <module>metrics-logback</module>
         <module>metrics-scala_2.9.1</module>
         <module>metrics-servlet</module>
+        <module>metrics-web</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jetty.version>7.6.1.v20120215</jetty.version>
         <servlet.version>2.5</servlet.version>
-        <jackson.version>1.9.5</jackson.version>
-        <guice.version>3.0</guice.version>
-        <slf4j.version>1.6.4</slf4j.version>
+        <slf4j.version>1.6.6</slf4j.version>
+        <jackson.version>2.0.5</jackson.version>
     </properties>
 
     <developers>

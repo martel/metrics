@@ -23,7 +23,7 @@ Just add the ``metrics-core`` library as a dependency:
         <dependency>
             <groupId>com.yammer.metrics</groupId>
             <artifactId>metrics-core</artifactId>
-            <version>2.1.2</version>
+            <version>2.1.3</version>
         </dependency>
     </dependencies>
 
@@ -39,12 +39,17 @@ of pending jobs in a queue:
 
 .. code-block:: java
 
-    Metrics.newGauge(QueueManager.class, "pending-jobs", new Gauge<Integer>() {
-        @Override
-        public Integer value() {
-            return queue.size();
-        }
-    });
+    public class QueueManager {
+        private Queue queue;
+
+        private final Gauge<Integer> myGauge = 
+            Metrics.newGauge(QueueManager.class, "pending-jobs", new Gauge<Integer>() {
+                @Override
+                public Integer value() {
+                    return queue.size();
+                }
+            });
+    }
 
 Every time this gauge is measured, it will return the number of jobs in the queue.
 
